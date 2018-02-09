@@ -1,26 +1,27 @@
 module ClockDivider
 #(
 	// Parameter Declarations
-	parameter MAXIMUM_VALUE = 5,
+	parameter FREQUENCY = 100,
+	parameter REFERENCE_CLOCK = 50_000_000,
+	parameter MAXIMUM_VALUE = MaxValue(FREQUENCY, REFERENCE_CLOCK),
 	parameter NBITS_FOR_COUNTER = CeilLog2(MAXIMUM_VALUE)
 )
 
 (
 	// Input Ports
-	input clk,
+	input clk_FPGA,
 	input reset,
 	input enable,
 	
 	// Output Ports
-	output flag,
-	output[NBITS_FOR_COUNTER-1:0] CountOut 
+	output clock_signal
 );
 
-bit MaxValue_Bit;
 
+bit MaxValue_Bit;
 logic [NBITS_FOR_COUNTER-1 : 0] Count_logic;
 
-	always_ff@(posedge clk or negedge reset) begin
+	always_ff@(posedge clk_FPGA or negedge reset) begin
 		if (reset == 1'b0)
 			Count_logic <= {NBITS_FOR_COUNTER{1'b0}};
 		else begin
@@ -36,15 +37,13 @@ logic [NBITS_FOR_COUNTER-1 : 0] Count_logic;
 
 always_comb
 	if(Count_logic == MAXIMUM_VALUE-1)
-		MaxValue_Bit = 1;
+		MaxValue_Bit = !MaxValue_Bit;
 	else
-		MaxValue_Bit = 0;
+		MaxValue_Bit = MaxValue_Bit;
 
 		
 //---------------------------------------------------------------------------------------------
-assign flag = MaxValue_Bit;
-
-assign CountOut = Count_logic;
+assign clock_signal = MaxValue_Bit;
 //----------------------------------------------------------------------------------------------
 
 /*--------------------------------------------------------------------*/
@@ -65,4 +64,21 @@ assign CountOut = Count_logic;
 /*--------------------------------------------------------------------*/
  /*--------------------------------------------------------------------*/
  /*--------------------------------------------------------------------*/
+ 
+  /*Log Function*/
+     function integer MaxValue;
+       input integer clock;
+		 input integer f;
+       integer i,result;
+       begin
+          for(i=0; i < clock; i=i+f)
+             result = i;
+          MaxValue = result;
+       end
+    endfunction
+
+/*--------------------------------------------------------------------*/
+ /*--------------------------------------------------------------------*/
+ /*--------------------------------------------------------------------*/
+ 
 endmodule
