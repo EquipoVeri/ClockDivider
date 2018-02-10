@@ -1,7 +1,7 @@
 module ClockDivider
 #(
 	// Parameter Declarations
-	parameter FREQUENCY = 25_000_000,
+	parameter FREQUENCY = 12_500_000,
 	parameter REFERENCE_CLOCK = 50_000_000,
 	parameter MAXIMUM_VALUE = MaxValue(FREQUENCY, REFERENCE_CLOCK),
 	parameter NBITS_FOR_COUNTER = CeilLog2(MAXIMUM_VALUE)
@@ -29,7 +29,7 @@ logic [NBITS_FOR_COUNTER : 0] Count_logic;
 				if(enable == 1'b1)
 					if(Count_logic == MAXIMUM_VALUE - 1)begin
 						Count_logic <= 0;
-						MaxValue_Bit = !MaxValue_Bit;
+						MaxValue_Bit <= !MaxValue_Bit;
 						end
 					else
 						Count_logic <= Count_logic + 1'b1;
@@ -71,7 +71,7 @@ assign clock_signal = MaxValue_Bit;
        begin
           for(i=0,result=0; result < clock; i=i+1)
              result = result + f;
-          MaxValue = i;
+          MaxValue = i/2;
        end
     endfunction
 

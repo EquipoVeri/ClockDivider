@@ -3,7 +3,7 @@ timeprecision 1ps;// It specifies the resolution in the simulation.
 
 module ClockDivider_TB;
 
-parameter FREQUENCY = 25_000_000;
+parameter FREQUENCY = 12_500_000;
 parameter REFERENCE_CLOCK = 50_000_000;
 parameter MAXIMUM_VALUE = MaxValue(FREQUENCY, REFERENCE_CLOCK);
 parameter NBITS_FOR_COUNTER = CeilLog2(MAXIMUM_VALUE);
@@ -63,7 +63,7 @@ end
        input integer data;
        integer i,result;
        begin
-          for(i=0; 2**i < data; i=i+1)
+          for(i=0; 2**i <= data; i=i+1)
              result = i + 1;
           CeilLog2 = result;
        end
@@ -79,11 +79,13 @@ end
 	input integer clock;
        integer i, result;
        begin
+	//f_2 = f/2;
           for(i=0,result=0; result < clock; i=i+1)
              result = result + f;
-          MaxValue = i;
+          MaxValue = i/2;
        end
     endfunction
+
 
 
 /*--------------------------------------------------------------------*/
